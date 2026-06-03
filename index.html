@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>joinfoundry | Portal</title>
+    <style>
+        :root {
+            --primary: #0a2540;
+            --secondary: #635bff;
+            --accent: #00d4b2;
+            --bg-app: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-main: #1c2434;
+            --text-muted: #697386;
+            --border: #e3e8ee;
+            --error: #ff4d4f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            line-height: 1.4;
+            padding-bottom: 90px; /* Space for the bottom menu */
+        }
+
+        /* App Header */
+        .app-header {
+            background-color: var(--card-bg);
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        .notification-badge {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-app);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Main View Container */
+        .app-container {
+            padding: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .welcome-segment {
+            margin-bottom: 20px;
+        }
+
+        .welcome-segment h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .welcome-segment p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Card Elements */
+        .app-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Controls */
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input-menu {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: var(--bg-app);
+            outline: none;
+            color: var(--text-main);
+            font-weight: 500;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        /* interactive Slider Styling */
+        .slider-container {
+            margin: 20px 0 10px 0;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .weight-badge {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .weight-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+        }
+
+        .weight-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--secondary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(99, 91, 255, 0.4);
+            transition: transform 0.1s;
+        }
+
+        .weight-slider::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
+
+        .min-alert {
+            font-size: 12px;
+            color: var(--secondary);
+            background: rgba(99, 91, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Live Breakdown Receipt Sheet */
+        .receipt-sheet {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px dashed var(--border);
+            margin-top: 15px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .receipt-row.total {
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+            margin-bottom: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            width: 100%;
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
+            transition: filter 0.2s;
+        }
+
+        .btn-action:active {
+            filter: brightness(0.9);
+        }
+
+        /* Fixed App Bottom Menu Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+            padding-bottom: env(safe-area-inset-bottom); /* iOS Notch compliance */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            width: 20%;
+            height: 100%;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--secondary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Simple Tab View Logic elements */
+        .app-view {
+            display: none;
+        }
+        .app-view.active-view {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Native App Top Navbar Header -->
+    <header class="app-header">
+        <a href="#" class="logo">join<span>foundry</span></a>
+        <div class="notification-badge">🔔</div>
+    </header>
+
+    <div class="app-container">
+        
+        <!-- VIEW 1: SHIPPING CALCULATOR (DEFAULT ACTIVE) -->
+        <div id="view-ship" class="app-view active-view">
+            <div class="welcome-segment">
+                <h1>Doorstep Portal</h1>
+                <p>Nigeria to UK, US & Worldwide locations</p>
+            </div>
+
+            <div class="app-card">
+                <div class="card-title">🚀 New Shipment Quote</div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label class="form-label">Destination Country</label>
+                    <select id="destination" class="input-menu">
+                        <option value="UK">United Kingdom (UK) - Doorstep</option>
+                        <option value="US">United States (US) - Doorstep</option>
+                        <option value="CA">Canada (CA) - Doorstep</option>
+                    </select>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label class="form-label">Package Weight</label>
+                        <span class="weight-badge"><span id="weight-val">10</span> kg</span>
+                    </div>
+                    <input type="range" id="weight" class="weight-slider" min="10" max="150" value="10" oninput="updateUiCalculation()">
+                    <div class="min-alert">
+                        <span>ℹ️</span> Minimum platform delivery weight is 10kg
+                    </div>
+                </div>
+
+                <!-- Instant Calculation Breakdown Sheet -->
+                <div class="receipt-sheet">
+                    <div class="receipt-row">
+                        <span>Base Load (First 10kg)</span>
+                        <span>₦100,000</span>
+                    </div>
+                    <div class="receipt-row" id="excess-row" style="display: none;">
+                        <span id="excess-label">Surplus Weight</span>
+                        <span id="excess-price">₦0</span>
+                    </div>
+                    <div class="receipt-row total">
+                        <span>Estimated Total</span>
+                        <span id="total-price">₦100,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-action">Proceed with Booking</button>
+        </div>
+
+        <!-- VIEW 2: RATES REFERENCE MATRIX SHEET -->
+        <div id="view-rates" class="app-view">
+            <div class="welcome-segment">
+                <h1>Tariff Guide</h1>
+                <p>Transparent wholesale courier pricing</p>
+            </div>
+            
+            <div class="app-card">
+                <div class="card-title">📊 Weight Class Brackets</div>
+                <div class="receipt-row" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border)">
+                    <span style="font-weight:600">Weight Metric</span>
+                    <span style="font-weight:600">Naira Base Rate</span>
+                </div>
+                <div class="receipt-row" style="margin-bottom: 10px;">
+                    <span>First 10 KG Block (Min)</span>
+                    <span style="color:var(--text-main); font-weight:600;">₦10,000 / kg</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Each Additional KG (>10kg)</span>
+                    <span style="color:var(--text-main); font-weight:600;">₦9,000 / kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: SIMULATED PROFILE / ORDERS -->
+        <div id="view-history" class="app-view">
+            <div class="welcome-segment">
+                <h1>Shipment History</h1>
+                <p>Track ongoing transits and manifests</p>
+            </div>
+            <div class="app-card" style="text-align: center; padding: 40px 20px; color: var(--text-muted)">
+                <span style="font-size: 36px;">📦</span>
+                <p style="margin-top: 10px; font-size: 14px;">No active container orders booked yet.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PWA Bottom Navigation Menu Bar Container -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="switchMobileView(event, 'view-ship')">
+            <span class="nav-icon">📦</span>
+            <span>Ship</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchMobileView(event, 'view-rates')">
+            <span class="nav-icon">📊</span>
+            <span>Rates</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchMobileView(event, 'view-history')">
+            <span class="nav-icon">🕒</span>
+            <span>History</span>
+        </a>
+    </nav>
+
+    <script>
+        function updateUiCalculation() {
+            var slider = document.getElementById('weight');
+            var weight = parseFloat(slider.value);
+            
+            // Mirror interactive range badge
+            document.getElementById('weight-val').innerText = weight;
+
+            var baseRate = 10000;
+            var excessRate = 9000;
+            
+            var baseCost = 10 * baseRate;
+            var excessWeight = Math.max(0, weight - 10);
+            var excessCost = excessWeight * excessRate;
+            var totalCost = baseCost + excessCost;
+
+            var excessRow = document.getElementById('excess-row');
+            if (excessWeight > 0) {
+                excessRow.style.display = 'flex';
+                document.getElementById('excess-label').innerText = "Surplus (+" + excessWeight + "kg at ₦9k)";
+                document.getElementById('excess-price').innerText = "₦" + excessCost.toLocaleString();
+            } else {
+                excessRow.style.display = 'none';
+            }
+
+            document.getElementById('total-price').innerText = "₦" + totalCost.toLocaleString();
+        }
+
+        function switchMobileView(event, viewId) {
+            event.preventDefault();
+            
+            // Deactivate all content views
+            var views = document.querySelectorAll('.app-view');
+            views.forEach(function(v) { v.classList.remove('active-view'); });
+            
+            // Deactivate all navigation buttons
+            var navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(function(item) { item.classList.remove('active'); });
+            
+            // Target elements to enable
+            document.getElementById(viewId).classList.add('active-view');
+            event.currentTarget.classList.add('active');
+            
+            // Window scroll to top smoothly on view shifts
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Initialize state calculations on app frame ready 
+        window.onload = function() {
+            updateUiCalculation();
+        };
+    </script>
+</body>
+</html>
