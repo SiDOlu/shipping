@@ -3,257 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>joinfoundry | Portal</title>
+    <title>joinfoundry Portal</title>
     <style>
         :root {
-            --primary: #0a2540;
+            --primary: #0b1a30;
             --secondary: #635bff;
             --accent: #00d4b2;
-            --bg-app: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-main: #1c2434;
-            --text-muted: #697386;
-            --border: #e3e8ee;
-            --error: #ff4d4f;
+            --bg-dark: #050d1a;
+            --card-bg: rgba(16, 29, 48, 0.85);
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --nav-bg: rgba(11, 26, 48, 0.95);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-app);
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            line-height: 1.4;
-            padding-bottom: 90px; /* Space for the bottom menu */
+            overflow-x: hidden;
+            padding-bottom: 90px;
         }
 
-        /* App Header */
-        .app-header {
-            background-color: var(--card-bg);
-            padding: 16px;
-            position: sticky;
+        /* Moving/shining parcel background effect */
+        .bg-canvas {
+            position: fixed;
             top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 30%, #0d2342 0%, #050d1a 70%);
+        }
+
+        .bg-canvas::before {
+            content: '';
+            position: absolute;
+            width: 150vw;
+            height: 150vw;
+            top: -25vw;
+            left: -25vw;
+            border: 1px dashed rgba(99, 91, 255, 0.15);
+            border-radius: 50%;
+            animation: spinGlobe 120s linear infinite;
+        }
+        
+        .bg-canvas::after {
+            content: '';
+            position: absolute;
+            width: 120vw;
+            height: 120vw;
+            top: -10vw;
+            left: -10vw;
+            border: 1px dashed rgba(0, 212, 178, 0.1);
+            border-radius: 50%;
+            animation: spinGlobe 80s linear infinite reverse;
+        }
+
+        @keyframes spinGlobe {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Shiny tiny moving parcel shapes representing transit */
+        .parcel-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00d4b2;
+            border-radius: 2px;
+            box-shadow: 0 0 10px #00d4b2, 0 0 20px #635bff;
+            opacity: 0;
+            transform: rotate(45deg);
+            animation: parcelMove 8s infinite linear;
+        }
+
+        .p1 { top: 20%; left: -10%; animation-delay: 0s; }
+        .p2 { top: 40%; left: -10%; animation-delay: 2.5s; animation-duration: 11s; background: #635bff; }
+        .p3 { top: 65%; left: -10%; animation-delay: 5s; animation-duration: 9s; }
+        .p4 { top: 15%; left: -10%; animation-delay: 1s; animation-duration: 13s; background: #ffffff; }
+
+        @keyframes parcelMove {
+            0% { left: -10%; opacity: 0; transform: translateY(0) rotate(45deg) scale(0.6); }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { left: 110%; opacity: 0; transform: translateY(-40px) rotate(405deg) scale(1); }
+        }
+
+        .app-screen {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        .app-screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-header {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .logo {
+        .app-logo {
             font-size: 20px;
             font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
             letter-spacing: -0.5px;
         }
 
-        .logo span {
-            color: var(--secondary);
-        }
+        .app-logo span { color: var(--secondary); }
 
-        .notification-badge {
-            width: 36px;
-            height: 36px;
-            background: var(--bg-app);
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
+            box-shadow: 0 0 8px var(--accent);
         }
 
-        /* Main View Container */
-        .app-container {
-            padding: 16px;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        .welcome-segment {
-            margin-bottom: 20px;
-        }
-
-        .welcome-segment h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .welcome-segment p {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        /* Card Elements */
         .app-card {
             background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0,0,0,0.02);
+            padding: 22px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-        .card-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .subtitle { font-size: 14px; color: var(--text-sub); margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
 
-        /* Form Controls */
-        .form-label {
+        .form-group label {
             display: block;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-muted);
+            color: var(--text-sub);
             margin-bottom: 6px;
         }
 
-        .input-menu {
+        .app-input, .app-select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            background-color: var(--bg-app);
-            outline: none;
-            color: var(--text-main);
-            font-weight: 500;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23697386' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px;
-        }
-
-        /* interactive Slider Styling */
-        .slider-container {
-            margin: 20px 0 10px 0;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 8px;
-        }
-
-        .weight-badge {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--secondary);
-        }
-
-        .weight-slider {
-            width: 100%;
-            -webkit-appearance: none;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--border);
-            outline: none;
-        }
-
-        .weight-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--secondary);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(99, 91, 255, 0.4);
-            transition: transform 0.1s;
-        }
-
-        .weight-slider::-webkit-slider-thumb:active {
-            transform: scale(1.2);
-        }
-
-        .min-alert {
-            font-size: 12px;
-            color: var(--secondary);
-            background: rgba(99, 91, 255, 0.08);
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Live Breakdown Receipt Sheet */
-        .receipt-sheet {
-            background: #f8fafc;
-            border-radius: 10px;
             padding: 14px;
-            border: 1px dashed var(--border);
-            margin-top: 15px;
-        }
-
-        .receipt-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .receipt-row.total {
-            border-top: 1px solid var(--border);
-            padding-top: 8px;
-            margin-bottom: 0;
+            background: rgba(5, 13, 26, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
+            color: var(--text-main);
+            outline: none;
         }
 
-        /* Action Buttons */
+        .app-input:focus, .app-select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.3);
+        }
+
+        .weight-input-container { position: relative; }
+        .weight-unit {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
         .btn-action {
             width: 100%;
             background: var(--secondary);
-            color: var(--white);
+            color: white;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 15px;
+            padding: 16px;
+            font-size: 16px;
             font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
-            transition: filter 0.2s;
         }
 
-        .btn-action:active {
-            filter: brightness(0.9);
+        .btn-action:active { transform: scale(0.99); }
+
+        .breakdown-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 18px;
+            display: none;
         }
 
-        /* Fixed App Bottom Menu Navigation Bar */
+        .breakdown-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+        }
+
+        .breakdown-line.total {
+            border-top: 1px solid var(--border);
+            margin-top: 12px;
+            padding-top: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Tracking Timeline */
+        .tracking-output { display: none; margin-top: 20px; }
+        .timeline { position: relative; padding-left: 24px; margin-top: 15px; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 5px;
+            width: 2px;
+            height: 85%;
+            background: var(--border);
+        }
+
+        .timeline-step { position: relative; margin-bottom: 20px; }
+        .timeline-dot {
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-sub);
+        }
+
+        .timeline-step.active .timeline-dot {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .timeline-step.active { color: var(--text-main); }
+        .timeline-step.past { color: var(--text-sub); }
+        .timeline-time { font-size: 11px; color: var(--text-sub); }
+
+        /* Contact Section Grid */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .contact-icon { font-size: 20px; margin-right: 14px; }
+        .contact-label { font-size: 12px; color: var(--text-sub); text-transform: uppercase; }
+        .contact-val { font-size: 16px; font-weight: 500; }
+
+        /* Navigation Tab Menu on Bottom */
         .bottom-nav {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
-            height: 72px;
-            background: var(--card-bg);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            height: 76px;
+            background: var(--nav-bg);
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 1000;
-            box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
-            padding-bottom: env(safe-area-inset-bottom); /* iOS Notch compliance */
+            padding-bottom: env(safe-area-inset-bottom);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2000;
         }
 
         .nav-item {
@@ -261,198 +300,216 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: var(--text-muted);
+            color: var(--text-sub);
             text-decoration: none;
             font-size: 11px;
-            font-weight: 600;
-            width: 20%;
+            font-weight: 500;
+            width: 33.33%;
             height: 100%;
-            gap: 4px;
-            transition: color 0.2s;
+            cursor: pointer;
         }
 
-        .nav-item.active {
-            color: var(--secondary);
-        }
-
-        .nav-icon {
-            font-size: 20px;
-        }
-
-        /* Simple Tab View Logic elements */
-        .app-view {
-            display: none;
-        }
-        .app-view.active-view {
-            display: block;
-        }
+        .nav-item svg { width: 22px; height: 22px; margin-bottom: 4px; fill: currentColor; }
+        .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <!-- Native App Top Navbar Header -->
-    <header class="app-header">
-        <a href="#" class="logo">join<span>foundry</span></a>
-        <div class="notification-badge">🔔</div>
-    </header>
-
-    <div class="app-container">
-        
-        <!-- VIEW 1: SHIPPING CALCULATOR (DEFAULT ACTIVE) -->
-        <div id="view-ship" class="app-view active-view">
-            <div class="welcome-segment">
-                <h1>Doorstep Portal</h1>
-                <p>Nigeria to UK, US & Worldwide locations</p>
-            </div>
-
-            <div class="app-card">
-                <div class="card-title">🚀 New Shipment Quote</div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label class="form-label">Destination Country</label>
-                    <select id="destination" class="input-menu">
-                        <option value="UK">United Kingdom (UK) - Doorstep</option>
-                        <option value="US">United States (US) - Doorstep</option>
-                        <option value="CA">Canada (CA) - Doorstep</option>
-                    </select>
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <label class="form-label">Package Weight</label>
-                        <span class="weight-badge"><span id="weight-val">10</span> kg</span>
-                    </div>
-                    <input type="range" id="weight" class="weight-slider" min="10" max="150" value="10" oninput="updateUiCalculation()">
-                    <div class="min-alert">
-                        <span>ℹ️</span> Minimum platform delivery weight is 10kg
-                    </div>
-                </div>
-
-                <!-- Instant Calculation Breakdown Sheet -->
-                <div class="receipt-sheet">
-                    <div class="receipt-row">
-                        <span>Base Load (First 10kg)</span>
-                        <span>₦100,000</span>
-                    </div>
-                    <div class="receipt-row" id="excess-row" style="display: none;">
-                        <span id="excess-label">Surplus Weight</span>
-                        <span id="excess-price">₦0</span>
-                    </div>
-                    <div class="receipt-row total">
-                        <span>Estimated Total</span>
-                        <span id="total-price">₦100,000</span>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-action">Proceed with Booking</button>
-        </div>
-
-        <!-- VIEW 2: RATES REFERENCE MATRIX SHEET -->
-        <div id="view-rates" class="app-view">
-            <div class="welcome-segment">
-                <h1>Tariff Guide</h1>
-                <p>Transparent wholesale courier pricing</p>
-            </div>
-            
-            <div class="app-card">
-                <div class="card-title">📊 Weight Class Brackets</div>
-                <div class="receipt-row" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border)">
-                    <span style="font-weight:600">Weight Metric</span>
-                    <span style="font-weight:600">Naira Base Rate</span>
-                </div>
-                <div class="receipt-row" style="margin-bottom: 10px;">
-                    <span>First 10 KG Block (Min)</span>
-                    <span style="color:var(--text-main); font-weight:600;">₦10,000 / kg</span>
-                </div>
-                <div class="receipt-row">
-                    <span>Each Additional KG (>10kg)</span>
-                    <span style="color:var(--text-main); font-weight:600;">₦9,000 / kg</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 3: SIMULATED PROFILE / ORDERS -->
-        <div id="view-history" class="app-view">
-            <div class="welcome-segment">
-                <h1>Shipment History</h1>
-                <p>Track ongoing transits and manifests</p>
-            </div>
-            <div class="app-card" style="text-align: center; padding: 40px 20px; color: var(--text-muted)">
-                <span style="font-size: 36px;">📦</span>
-                <p style="margin-top: 10px; font-size: 14px;">No active container orders booked yet.</p>
-            </div>
-        </div>
-
+    <div class="bg-canvas">
+        <div class="parcel-particle p1"></div>
+        <div class="parcel-particle p2"></div>
+        <div class="parcel-particle p3"></div>
+        <div class="parcel-particle p4"></div>
     </div>
 
-    <!-- PWA Bottom Navigation Menu Bar Container -->
+    <div class="app-header">
+        <div class="app-logo">join<span>foundry</span></div>
+        <div class="online-dot"></div>
+    </div>
+
+    <div id="screen-calculator" class="app-screen active">
+        <div class="app-card">
+            <h2>Portal Calculator</h2>
+            <p class="subtitle">Nigeria to UK, US & Worldwide doorstep delivery.</p>
+
+            <div class="form-group">
+                <label>Destination Country</label>
+                <select id="destination" class="app-select">
+                    <option value="UK">United Kingdom (UK)</option>
+                    <option value="US">United States (US)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Weight Volume</label>
+                <div class="weight-input-container">
+                    <input type="number" id="weight" class="app-input" value="10" min="10" step="0.5">
+                    <span class="weight-unit">KG</span>
+                </div>
+                <p style="font-size: 12px; color: var(--accent); margin-top: 6px;">💡 Minimum weight: 10kg</p>
+            </div>
+
+            <button class="btn-action" onclick="runMobileCalculation()">Calculate Cost</button>
+
+            <div id="calc-breakdown" class="breakdown-box">
+                <div class="breakdown-line">
+                    <span>First 10kg Base Tier</span>
+                    <span id="lbl-base">₦100,000</span>
+                </div>
+                <div class="breakdown-line" id="row-surplus">
+                    <span id="lbl-surplus-title">Additional Weight</span>
+                    <span id="lbl-surplus-val">₦0</span>
+                </div>
+                <div class="breakdown-line total">
+                    <span>Total Estimate</span>
+                    <span id="lbl-total">₦100,000</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-track" class="app-screen">
+        <div class="app-card">
+            <h2>Track Shipment</h2>
+            <p class="subtitle">Enter reference code to track parcels across global paths.</p>
+
+            <div class="form-group">
+                <label>Tracking Number</label>
+                <input type="text" id="track-id" class="app-input" placeholder="e.g., JF-8024-NG" value="JF-2026-UK">
+            </div>
+
+            <button class="btn-action" onclick="fetchTrackingData()">Search Registry</button>
+
+            <div id="track-result" class="tracking-output">
+                <div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 10px;">
+                    <span style="font-size: 14px; font-weight: bold;" id="rendered-id">JF-2026-UK</span>
+                    <span style="font-size: 13px; color: var(--accent);">IN TRANSIT</span>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-step active">
+                        <div class="timeline-dot"></div>
+                        <div style="font-weight: 600; font-size: 14px;">In Transit - Air Freight</div>
+                        <div class="timeline-time">Departed Lagos Hub Hub • Moving to Destination</div>
+                    </div>
+                    <div class="timeline-step past">
+                        <div class="timeline-dot"></div>
+                        <div style="font-weight:500; font-size: 13px;">Customs Cleared</div>
+                        <div class="timeline-time">Lagos International Airport Hub</div>
+                    </div>
+                    <div class="timeline-step past">
+                        <div class="timeline-dot"></div>
+                        <div style="font-weight:500; font-size: 13px;">Parcel Handled</div>
+                        <div class="on-demand tracking log">Doorstep Pickup processed successfully in Nigeria</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-contact" class="app-screen">
+        <div class="app-card">
+            <h2>Global Contacts</h2>
+            <p class="subtitle">On-demand digital doorstep support channels.</p>
+
+            <div class="contact-item">
+                <div class="contact-icon">🇬🇧</div>
+                <div>
+                    <div class="contact-label">United Kingdom Hub</div>
+                    <div class="contact-val">London Last-Mile Fulfillment, UK</div>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon">🇺🇸</div>
+                <div>
+                    <div class="contact-label">United States Hub</div>
+                    <div class="contact-val">New York Sorting Facility, US</div>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon">🇳🇬</div>
+                <div>
+                    <div class="contact-label">Nigeria Export Hub</div>
+                    <div class="contact-val">Main Sorting Center, Lagos, NG</div>
+                </div>
+            </div>
+
+            <div class="contact-item" style="border-bottom: none; margin-top: 10px;">
+                <div class="contact-icon">✉️</div>
+                <div>
+                    <div class="contact-label">Central Logistics Desk</div>
+                    <div class="contact-val" style="color: var(--accent);">shipnow@joinfoundry.run</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active" onclick="switchMobileView(event, 'view-ship')">
-            <span class="nav-icon">📦</span>
-            <span>Ship</span>
-        </a>
-        <a href="#" class="nav-item" onclick="switchMobileView(event, 'view-rates')">
-            <span class="nav-icon">📊</span>
-            <span>Rates</span>
-        </a>
-        <a href="#" class="nav-item" onclick="switchMobileView(event, 'view-history')">
-            <span class="nav-icon">🕒</span>
-            <span>History</span>
-        </a>
+        <div class="nav-item active" onclick="switchTab('screen-calculator', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            Calculator
+        </div>
+        <div class="nav-item" onclick="switchTab('screen-track', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Track
+        </div>
+        <div class="nav-item" onclick="switchTab('screen-contact', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Contact
+        </div>
     </nav>
 
     <script>
-        function updateUiCalculation() {
-            var slider = document.getElementById('weight');
-            var weight = parseFloat(slider.value);
-            
-            // Mirror interactive range badge
-            document.getElementById('weight-val').innerText = weight;
+        function switchTab(screenId, tabElement) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            tabElement.classList.add('active');
+        }
 
-            var baseRate = 10000;
-            var excessRate = 9000;
-            
-            var baseCost = 10 * baseRate;
-            var excessWeight = Math.max(0, weight - 10);
-            var excessCost = excessWeight * excessRate;
-            var totalCost = baseCost + excessCost;
+        function runMobileCalculation() {
+            var weightEl = document.getElementById('weight');
+            var weight = parseFloat(weightEl.value);
 
-            var excessRow = document.getElementById('excess-row');
-            if (excessWeight > 0) {
-                excessRow.style.display = 'flex';
-                document.getElementById('excess-label').innerText = "Surplus (+" + excessWeight + "kg at ₦9k)";
-                document.getElementById('excess-price').innerText = "₦" + excessCost.toLocaleString();
-            } else {
-                excessRow.style.display = 'none';
+            if (isNaN(weight) || weight < 10) {
+                weight = 10;
+                weightEl.value = 10;
             }
 
-            document.getElementById('total-price').innerText = "₦" + totalCost.toLocaleString();
+            var baseLimit = 10;
+            var baseRate = 10000;
+            var surplusRate = 9000;
+
+            var baseCost = baseLimit * baseRate;
+            var excessWeight = Math.max(0, weight - baseLimit);
+            var excessCost = excessWeight * surplusRate;
+            var totalCost = baseCost + excessCost;
+
+            document.getElementById('lbl-base').innerText = "₦" + baseCost.toLocaleString();
+            
+            if (excessWeight > 0) {
+                document.getElementById('row-surplus').style.display = 'flex';
+                document.getElementById('lbl-surplus-title').innerText = "Surplus (" + excessWeight.toFixed(1) + "kg × ₦9k)";
+                document.getElementById('lbl-surplus-val').innerText = "₦" + excessCost.toLocaleString();
+            } else {
+                document.getElementById('row-surplus').style.display = 'none';
+            }
+
+            document.getElementById('lbl-total').innerText = "₦" + totalCost.toLocaleString();
+            document.getElementById('calc-breakdown').style.display = 'block';
         }
 
-        function switchMobileView(event, viewId) {
-            event.preventDefault();
-            
-            // Deactivate all content views
-            var views = document.querySelectorAll('.app-view');
-            views.forEach(function(v) { v.classList.remove('active-view'); });
-            
-            // Deactivate all navigation buttons
-            var navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(function(item) { item.classList.remove('active'); });
-            
-            // Target elements to enable
-            document.getElementById(viewId).classList.add('active-view');
-            event.currentTarget.classList.add('active');
-            
-            // Window scroll to top smoothly on view shifts
-            window.scrollTo({top: 0, behavior: 'smooth'});
+        function fetchTrackingData() {
+            var inputId = document.getElementById('track-id').value;
+            if(inputId.trim() !== "") {
+                document.getElementById('rendered-id').innerText = inputId.toUpperCase();
+            }
+            document.getElementById('track-result').style.display = 'block';
         }
 
-        // Initialize state calculations on app frame ready 
-        window.onload = function() {
-            updateUiCalculation();
-        };
+        window.onload = function() { runMobileCalculation(); };
     </script>
 </body>
 </html>
